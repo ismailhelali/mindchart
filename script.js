@@ -1,82 +1,75 @@
-// Load pre-trained weights (if available)
-const net = new brain.recurrent.LSTM();
-const savedWeights = localStorage.getItem("trainedWeights");
+// Initialize Transformers.js pipeline
+let classifier;
 
-if (savedWeights) {
-  net.fromJSON(JSON.parse(savedWeights));
-} else {
-  // Train the model and save the weights
-  net.train([
-    { input: "Create a mind map for a startup idea", output: "startup" },
-    { input: "Plan a project timeline", output: "timeline" },
-    { input: "Organize my thoughts", output: "thoughts" },
-  ]);
-  localStorage.setItem("trainedWeights", JSON.stringify(net.toJSON()));
+async function initializeNLP() {
+  classifier = await transformers.pipeline('text-classification', 'Xenova/distilbert-base-uncased-finetuned-sst-2-english');
 }
 
-// Generate mind chart
+// Classify the input text
+async function classifyText(text) {
+  const result = await classifier(text);
+  return result[0].label; // Returns the predicted label
+}
+
+// Generate mind chart with Cytoscape.js
 function generateMindChart(data) {
-  const width = 600;
-  const height = 400;
+  const cy = cytoscape({
+    container: document.getElementById("chart"),
+    elements: [
+      // Nodes
+      { data: { id: "main", label: data[0] } },
+      { data: { id: "step1", label: data[1] } },
+      { data: { id: "step2", label: data[2] } },
+      { data: { id: "step3", label: data[3] } },
 
-  // Clear previous chart
-  d3.select("#chart").html("");
-
-  // Create SVG element
-  const svg = d3.select("#chart")
-    .append("svg")
-    .attr("width", width)
-    .attr("height", height);
-
-  // Create nodes
-  const nodes = data.map((d, i) => ({
-    id: i,
-    label: d,
-    x: i === 0 ? width / 2 : (width / 2) + (i * 100 - 200),
-    y: height / 2,
-  }));
-
-  // Add links
-  svg.selectAll("line")
-    .data(nodes.slice(1))
-    .enter()
-    .append("line")
-    .attr("x1", width / 2)
-    .attr("y1", height / 2)
-    .attr("x2", d => d.x)
-    .attr("y2", d => d.y)
-    .attr("stroke", "#007bff");
-
-  // Add nodes
-  svg.selectAll("circle")
-    .data(nodes)
-    .enter()
-    .append("circle")
-    .attr("cx", d => d.x)
-    .attr("cy", d => d.y)
-    .attr("r", 20)
-    .attr("fill", "#007bff");
-
-  // Add labels
-  svg.selectAll("text")
-    .data(nodes)
-    .enter()
-    .append("text")
-    .text(d => d.label)
-    .attr("x", d => d.x)
-    .attr("y", d => d.y + 30)
-    .attr("text-anchor", "middle")
-    .attr("fill", "#333");
+      // Edges
+      { data: { id: "edge1", source: "main", target: "step1" } },
+      { data: { id: "edge2", source: "main", target: "step2" } },
+      { data: { id: "edge3", source: "main", target: "step3" } },
+    ],
+    style: [
+      {
+        selector: "node",
+        style: {
+          label: "data(label)",
+          "text-valign": "center",
+          "text-halign": "center",
+          "background-color": "#007bff",
+          color: "#fff",
+          width: 40,
+          height: 40,
+        },
+      },
+      {
+        selector: "edge",
+        style: {
+          width: 2,
+          "line-color": "#007bff",
+          "curve-style": "bezier",
+        },
+      },
+    ],
+    layout: {
+      name: "breadthfirst",
+      directed: true,
+      padding: 10,
+      spacingFactor: 1.5,
+    },
+  });
 }
 
 // Event listener for the button
-document.getElementById("generateChart").addEventListener("click", () => {
+document.getElementById("generateChart").addEventListener("click", async () => {
   const idea = document.getElementById("ideaInput").value;
 
-  // Use Brain.js to process the idea
-  const category = net.run(idea);
+  // Classify the input text
+  const category = await classifyText(idea);
+  console.log("Category:", category);
 
-  // Generate a simple mind chart based on the idea
-  const chartData = [category, "Step 1", "Step 2", "Step 3"]; // Example data
+  // Generate a mind chart based on the category
+  const chartData = [category, "Step 1", "Step 2", "Step 3"];
   generateMindChart(chartData);
 });
+
+// Initialize NLP pipeline on page load
+initializeNLP();
