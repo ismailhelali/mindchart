@@ -1,20 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Idea to Mind Chart</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/@xenova/transformers/dist/transformers.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.23.0/cytoscape.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Booking</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f4f4f9, #e0e7ff);
+            color: #333;
+            line-height: 1.6;
+        }
+        header {
+            background: #1e3a8a;
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1), transparent);
+            z-index: 1;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 2;
+            animation: fadeInDown 1s ease-in-out;
+        }
+        .language-switcher {
+            position: relative;
+            z-index: 2;
+        }
+        .language-switcher button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .language-switcher button:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.05);
+        }
+        .content {
+            max-width: 900px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+            text-align: center;
+        }
+        p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease-in-out;
+        }
+        .cta-button {
+            display: inline-block;
+            background: #1e3a8a;
+            color: white;
+            padding: 1rem 3rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+        }
+        .cta-button:hover {
+            background: #3b82f6;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            p { font-size: 1.1rem; }
+            .cta-button { font-size: 1.2rem; padding: 0.8rem 2rem; }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Idea to Mind Chart</h1>
-    <textarea id="ideaInput" placeholder="Enter your idea here..."></textarea>
-    <button id="generateChart">Generate Mind Chart</button>
-    <div id="chart"></div>
-  </div>
-  <script src="script.js"></script>
+    <header>
+        <h1 class="text" data-en="Appointment Booking" data-fr="Prise de Rendez-vous" data-es="Reserva de Citas">Appointment Booking</h1>
+        <div class="language-switcher">
+            <button onclick="changeLanguage('en')">English</button>
+            <button onclick="changeLanguage('fr')">Français</button>
+            <button onclick="changeLanguage('es')">Español</button>
+        </div>
+    </header>
+    <div class="content">
+        <p class="text" 
+           data-en="Book your session with a Coach, Psychotherapist, or Psychologist today and take the first step towards a better you." 
+           data-fr="Réservez votre séance avec un Coach, Psychothérapeute ou Psychologue dès aujourd'hui et faites le premier pas vers une meilleure version de vous-même." 
+           data-es="Reserva tu sesión con un Coach, Psicoterapeuta o Psicólogo hoy y da el primer paso hacia una mejor versión de ti mismo.">
+            Book your session with a Coach, Psychotherapist, or Psychologist today and take the first step towards a better you.
+        </p>
+        <a href="#" class="cta-button text" 
+           data-en="Book Now" 
+           data-fr="Réserver Maintenant" 
+           data-es="Reservar Ahora">Book Now</a>
+    </div>
+
+    <script>
+        function changeLanguage(lang) {
+            document.querySelectorAll('.text').forEach(element => {
+                element.textContent = element.getAttribute(`data-${lang}`);
+            });
+        }
+    </script>
 </body>
 </html>
